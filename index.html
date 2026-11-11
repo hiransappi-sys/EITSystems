@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบคลังสื่อ | By สพม.เลย หนองบัวลำภู</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <!-- SweetAlert2 CSS & JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide Icons (Stable Version) -->
+  <script src="https://unpkg.com/lucide@0.344.0"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      --purple-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      --teal-gradient: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+      --pink-gradient: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    }
+
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      min-height: 100vh;
+    }
+    * {
+      font-family: 'Sarabun', sans-serif;
+    }
+    .animate-fade-in { 
+      animation: fadeIn 0.3s ease-in-out; 
+    }
+    
+    @keyframes fadeIn { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      } 
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { 
+      width: 10px; 
+    }
+    
+    ::-webkit-scrollbar-track { 
+      background: #f1f5f9; 
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb { 
+      background: linear-gradient(180deg, #4f46e5, #7c3aed);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover { 
+      background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    }
+
+    /* Print Styles */
+    @media print {
+      @page { 
+        size: A4; 
+        margin: 1cm; 
+      }
+      
+      body { 
+        background: white; 
+        -webkit-print-color-adjust: exact; 
+      }
+      
+      nav, .mobile-header, .no-print, #mobile-menu-overlay, .print-hidden { 
+        display: none !important; 
+      }
+      
+      main { 
+        margin: 0; 
+        padding: 0; 
+        height: auto; 
+        overflow: visible; 
+      }
+      
+      .shadow-sm, .shadow-md, .shadow-lg, .shadow-2xl { 
+        box-shadow: none !important; 
+      }
+      
+      .border { 
+        border: 1px solid #ddd !important; 
+      }
+      
+      .bg-white { 
+        background-color: white !important; 
+      }
+      
+      .text-slate-500 { 
+        color: #000 !important; 
+      }
+      
+      table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        font-size: 12px; 
+      }
+      
+      th, td { 
+        border: 1px solid #ccc; 
+        padding: 8px; 
+        text-align: left; 
+      }
+      
+      thead { 
+        background-color: #f3f4f6 !important; 
+      }
+      
+      #report-container { 
+        display: block !important; 
+      }
+    }
+
+    /* Custom Styles */
+    .card-gradient {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    }
+
+    .welcome-section {
+        /* 💡 ใส่ Gradient ซ้อนทับด้านหน้าเพื่อให้ฝั่งซ้ายเข้มจนอ่านตัวอักษรง่าย และค่อยๆ จางเปิดให้เห็นรูปฝั่งขวา */
+      background: linear-gradient(to right, rgba(79, 70, 229, 0.98) 0%, rgba(124, 58, 237, 0.8) 40%, rgba(15, 23, 42, 0.15) 50%), 
+                   url('https://img1.pic.in.th/images/-Google-Form454391276057185a.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      color: white;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.3);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .welcome-section::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    .nav-tab-active {
+      background: var(--primary-gradient);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .section-title {
+      background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .resource-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .resource-card:hover {
+      border-color: #c7d2fe;
+      border-left-color: #4f46e5;
+      box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.15);
+      transform: translateY(-5px);
+    }
+
+    .category-badge {
+      background: var(--primary-gradient);
+      color: white;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      display: inline-block;
+    }
+
+    .developer-header {
+      background: linear-gradient(90deg, #4f46e5, #7c3aed, #8b5cf6);
+      color: white;
+    }
+
+    .modal-header {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .graphic-bg {
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 20%);
+    }
+
+    .form-input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .star-rating .active {
+      color: #fbbf24;
+      filter: drop-shadow(0 0 2px rgba(251, 191, 36, 0.5));
+    }
+
+    .social-btn {
+      transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+      transform: scale(1.1) translateY(-3px);
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      border-left: 5px solid #4f46e5;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    @keyframes subtle-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .notification-badge {
+      animation: subtle-pulse 2s infinite;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.4);
+    }
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #4f46e5, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .animated-bg {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 graphic-bg">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+    const LOGO_URL = "https://yt3.googleusercontent.com/nI-KAk09LSplF_0ZNbxwf_sTPfUjvA8I99tdOaWaawLhIHHfuI00Qaz06y8zaN5CpeeqqIcv=s900-c-k-c0x00ffffff-no-rj";
+
+    // --- 1. Mock Data ---
+    const MOCK_DATA = {
+      systems: [
+        { id: '1', title: 'ระบบเช็คชื่อนักเรียน', description: 'ระบบบันทึกเวลาเรียนออนไลน์', category: 'บริหารงาน', image: 'https://picsum.photos/id/1/600/400', link: '#', demoLink: '#', tutorialLink: '#', views: 1250, downloads: 340, rating: 4.8, rating_count: 50, author: 'ครูสมชาย ใจดี', position: 'ครูชำนาญการ', school: 'โรงเรียนบ้านหนองฮี', status: 'approved', created_at: '2026-06-25T10:00:00.000Z' },
+        { id: '2', title: 'โปรแกรมคำนวณเกรด', description: 'ช่วยคำนวณเกรดเฉลี่ยอัตโนมัติ', category: 'เทคโนโลยี', image: 'https://picsum.photos/id/20/600/400', link: '#', views: 850, downloads: 120, rating: 4.5, rating_count: 30, author: 'ครูสมหญิง รักเรียน', position: 'ครูผู้ช่วย', school: 'โรงเรียนวัดดอนหวาย', status: 'approved', created_at: '2026-06-26T14:30:00.000Z' },
+        { id: 'sys_pending', title: 'ระบบห้องสมุด (รอตรวจสอบ)', description: 'ระบบยืมคืนหนังสือออนไลน์', category: 'บริหารงาน', image: '', link: '#', views: 0, downloads: 0, rating: 0, author: 'ครูมาใหม่ ไฟแรง', position: 'ครูผู้ช่วย', school: 'โรงเรียนพัฒนา', status: 'pending', created_at: '2026-06-28T08:15:00.000Z' }
+      ],
+      materials: [
+        { id: '3', title: 'ใบงานวิทยาศาสตร์ ป.1', description: 'เรื่องสิ่งมีชีวิตรอบตัวเรา', category: 'ประถมศึกษา', image: 'https://picsum.photos/id/36/600/400', link: '#' , status: 'approved', author: 'ครูวิทย์ คิดสนุก', position: 'ครู ค.ศ.1', school: 'โรงเรียนอนุบาลหมีน้อย', views: 200, downloads: 50, rating: 5.0, created_at: '2026-06-24T09:20:00.000Z' },
+        { id: 'mat_pending', title: 'สื่อการสอนภาษาไทย (รอตรวจสอบ)', description: 'แบบฝึกอ่านเขียน', category: 'ประถมศึกษา', image: '', link: '#', status: 'pending', author: 'ครูภาษา พาท่อง', position: 'ครูอัตราจ้าง', school: 'โรงเรียนวัดท่าพระ', created_at: '2026-06-28T11:40:00.000Z' }
+      ],
+      best_practices: [
+        { id: 'bp1', title: 'การจัดการเรียนรู้เชิงรุก (Active Learning)', category: 'การสอน', description: 'แนวทางการจัดกิจกรรมการเรียนรู้ที่เน้นให้ผู้เรียนมีส่วนร่วม', image: 'https://picsum.photos/id/10/600/400', link: '#', status: 'approved', author: 'ดร.ศึกษา พัฒนา', position: 'ผู้อำนวยการ', school: 'โรงเรียนสาธิตพัฒนา', views: 500, downloads: 100, rating: 4.9, created_at: '2026-06-27T10:10:00.000Z' }
+      ],
+      prompts: [], 
+      donations: [
+        { id: 'd1', name: 'คุณใจดี มีตังค์', amount: 500, created_at: '2023-01-01' },
+        { id: 'd2', name: 'ศิษย์เก่ารุ่น 5', amount: 1000, created_at: '2023-01-02' },
+        { id: 'd3', name: 'ผู้ไม่ประสงค์ออกนาม', amount: 200, created_at: '2023-01-03' }
+      ],
+      total_visits: 12500
+    };
+
+    // --- 2. Server Bridge ---
+    const isGAS = typeof google !== 'undefined' && google.script && google.script.run;
+
+    const server = {
+      getData: (collection) => {
+        if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getData(collection));
+        return new Promise(resolve => setTimeout(() => resolve(MOCK_DATA[collection] || []), 800));
+      },
+      addData: (collection, data) => {
+        if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).addData(collection, data));
+        return new Promise(resolve => setTimeout(() => resolve({ id: Date.now().toString(), ...data }), 1500)); 
+      },
+      updateData: (collection, id, data) => {
+        if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).updateData(collection, id, data));
+        return new Promise(resolve => setTimeout(() => resolve({ ...data, id }), 1500));
+      },
+      deleteData: (collection, id) => {
+        if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).deleteData(collection, id));
+        return new Promise(resolve => setTimeout(() => resolve(true), 1500));
+      },
+      uploadToDrive: (base64, name, mime) => {
+        if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).uploadToDrive(base64, name, mime));
+        return new Promise(resolve => setTimeout(() => resolve(`https://picsum.photos/seed/${Date.now()}/600/400`), 1000));
+      },
+      logWebVisit: () => {
+         if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).logWebVisit());
+         return new Promise(resolve => setTimeout(() => resolve(MOCK_DATA.total_visits + 1), 500));
+      },
+      incrementStat: (col, id, type) => {
+         if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).incrementStat(col, id, type));
+         return new Promise(resolve => setTimeout(() => resolve(Math.floor(Math.random() * 100)), 500));
+      },
+      rateItem: (col, id, score) => {
+         if (isGAS) return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).rateItem(col, id, score));
+         return new Promise(resolve => setTimeout(() => resolve(4.5), 500));
+      }
+    };
+
+    // --- 3. Sub Components ---
+    const Icon = ({ name, className }) => {
+      const iconName = useMemo(() => name ? name.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('') : '', [name]);
+      const [isLoaded, setIsLoaded] = useState(!!window.lucide);
+
+      useEffect(() => {
+        if (isLoaded) return;
+        const timer = setInterval(() => { if (window.lucide) { setIsLoaded(true); clearInterval(timer); } }, 100);
+        return () => clearInterval(timer);
+      }, [isLoaded]);
+      
+      const IconElement = useMemo(() => {
+        if (!name || !window.lucide || !window.lucide.icons || !window.lucide.icons[iconName]) return null;
+        try {
+          const iconDef = window.lucide.icons[iconName];
+          if (!Array.isArray(iconDef)) return null;
+          
+          const tag = iconDef[0];
+          const attrs = iconDef[1];
+          const children = iconDef[2];
+          
+          if (typeof tag !== 'string') return null;
+
+          const toCamelCase = s => s.replace(/-./g, x => x[1].toUpperCase());
+          const convertAttrs = a => {
+             if (!a) return {};
+             const newAttrs = {};
+             Object.keys(a).forEach(k => {
+               const key = ['stroke-width', 'stroke-linecap', 'stroke-linejoin'].includes(k) ? toCamelCase(k) : k;
+               newAttrs[key] = a[k];
+             });
+             return newAttrs;
+          };
+
+          const renderChildren = list => {
+              if (!Array.isArray(list)) return null;
+              return list.map((child, i) => {
+                  if (!Array.isArray(child) || !child[0]) return null;
+                  return React.createElement(child[0], { ...convertAttrs(child[1]), key: i }, child[2] ? renderChildren(child[2]) : null);
+              }).filter(Boolean);
+          };
+
+          return React.createElement(tag, { ...convertAttrs(attrs), className: `lucide lucide-${name} ${className || ''}`, key: name }, children ? renderChildren(children) : null);
+        } catch(err) {
+          console.error("Icon conversion failed:", err);
+          return null;
+        }
+      }, [iconName, className, isLoaded, name]);
+
+      if (!IconElement) return <span className={`inline-block w-5 h-5 bg-slate-200 rounded ${className}`}></span>;
+      return IconElement;
+    };
+
+    const NavButton = ({ active, onClick, icon, label }) => (
+      <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${active ? 'nav-tab-active' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 glass-effect'}`}>
+        <Icon name={icon} className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400'}`} /> {label}
+      </button>
+    );
+
+    const StatCard = ({ title, count, icon, color, onClick }) => (
+      <div onClick={onClick} className="card-gradient p-6 rounded-xl border border-slate-100 cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white to-transparent opacity-10 rounded-full transform translate-x-8 -translate-y-8"></div>
+        <div className="flex justify-between items-center relative z-10">
+           <div>
+              <p className="text-slate-500 text-sm font-medium mb-1">{title}</p>
+              <h3 className="text-3xl font-bold text-slate-800 gradient-text">{count}</h3>
+           </div>
+           <div className={`${color} text-white p-4 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-200`}>
+              <Icon name={icon} className="w-6 h-6" />
+           </div>
+        </div>
+      </div>
+    );
+
+    const HomePage = ({ systems = [], materials = [], bestPractices = [], totalVisits = 0, setActiveTab, onView }) => {
+      const [searchCategory, setSearchCategory] = useState('');
+
+      const getRecommended = (items) => {
+        if (!items) return [];
+        const filteredItems = searchCategory 
+          ? items.filter(item => (item.category || '').toLowerCase().includes(searchCategory.toLowerCase()))
+          : items;
+
+        return [...filteredItems].sort((a, b) => {
+           const scoreA = (parseInt(a.views) || 0) + (parseInt(a.downloads) || 0);
+           const scoreB = (parseInt(b.views) || 0) + (parseInt(b.downloads) || 0);
+           return scoreB - scoreA;
+        }).slice(0, 3);
+      };
+
+      const recommendedSystems = getRecommended(systems);
+      const recommendedMaterials = getRecommended(materials);
+      const recommendedBestPractices = getRecommended(bestPractices);
+
+      const renderSection = (title, icon, items, tabName) => (
+        <div className="mt-8">
+            <div className="flex items-center justify-between mb-4">
+               <h3 className="font-bold text-xl text-slate-800 flex items-center gap-2 section-title">
+                  <Icon name={icon} className="text-yellow-500 w-6 h-6 fill-current"/> {title}
+               </h3>
+               <button onClick={() => setActiveTab(tabName)} className="btn-primary text-sm text-white px-4 py-2 rounded-lg font-medium flex items-center gap-1 hover:shadow-lg transition-all"> 
+                  ดูทั้งหมด <Icon name="arrow-right" className="w-3 h-3"/>
+               </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               {items.length > 0 ? items.map((item, index) => (
+                  <div key={item.id} onClick={() => onView({...item, type: tabName === 'systems' ? 'system' : (tabName === 'best_practices' ? 'best_practice' : 'material'), collection: tabName})} className="feature-card cursor-pointer group relative overflow-hidden">
+                     <div className="absolute top-0 left-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1.5 rounded-br-lg z-10 font-bold shadow-sm flex items-center gap-1">
+                        <Icon name="crown" className="w-3 h-3"/>   {index + 1}
+                     </div>
+                     <div className="h-32 bg-gradient-to-r from-slate-100 to-slate-50 relative overflow-hidden group-hover:brightness-95 transition-all">
+                        {item.image ?
+                           <img src={item.image} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e)=>e.target.src='https://placehold.co/600x400?text=No+Image'}/> 
+                           : <div className="flex items-center justify-center h-full text-slate-300"><Icon name="image" className="w-10 h-10 opacity-50"/></div>}
+                     </div>
+                     <div className="p-4">
+                        <h4 className="font-bold text-slate-800 line-clamp-1 mb-1 group-hover:text-indigo-600 transition-colors">{item.title}</h4>
+                        <div className="flex items-center justify-between text-xs text-slate-500 mt-2">
+                           <span className="category-badge">{item.category}</span>
+                           <div className="flex gap-3">
+                              <span className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded"><Icon name="eye" className="w-3 h-3"/> {item.views || 0}</span>
+                              <span className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded"><Icon name="download" className="w-3 h-3"/> {item.downloads || 0}</span>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               )) : (
+                  <div className="col-span-3 text-center py-12 text-slate-400 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                     <Icon name="search-x" className="w-12 h-12 mx-auto mb-3 opacity-20"/>
+                     <p className="text-sm">ไม่พบข้อมูลในกลุ่มสาระ "{searchCategory}"</p>
+                  </div>
+               )}
+            </div>
+         </div>
+      );
+
+      return (
+      <div className="space-y-8 animate-fade-in">
+         <div className="welcome-section">
+            <h2 className="text-3xl font-bold text-white tracking-tight mb-2">ยินดีต้อนรับ</h2>
+            <p className="text-white/90 text-lg">คลังสื่อและนวัตกรรมทางการศึกษา</p>
+            <div className="flex items-center gap-2 mt-4 text-white/80">
+               <Icon name="users" className="w-4 h-4" />
+               <span className="text-sm"> ผู้เข้าชมทั้งหมด {totalVisits.toLocaleString()} ครั้ง </span>
+            </div>
+         </div>
+         
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 glass-effect -mt-12 relative z-10">
+            <div className="max-w-2xl mx-auto">
+               <div className="flex flex-col md:flex-row gap-3">
+                  <div className="relative flex-grow">
+                     <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400"/>
+                     <input 
+                        type="text" 
+                        className="w-full pl-12 pr-4 py-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-all form-input shadow-sm" 
+                        placeholder="ค้นหาสื่อตามกลุ่มสาระ (เช่น ภาษาไทย, คณิตศาสตร์...)" 
+                        value={searchCategory} 
+                        onChange={(e) => setSearchCategory(e.target.value)}
+                     />
+                  </div>
+                  <button className="btn-primary px-8 py-3.5 rounded-xl text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95 bg-gradient-to-r from-indigo-600 to-violet-600">
+                     <Icon name="search" className="w-4 h-4"/>
+                     <span>ค้นหา</span>
+                  </button>
+               </div>
+               {searchCategory && (
+                  <div className="mt-3 flex items-center gap-2 animate-fade-in">
+                     <span className="text-xs text-slate-400">ผลการค้นหาสำหรับ:</span>
+                     <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-2 py-1 rounded-md border border-indigo-100">{searchCategory}</span>
+                     <button onClick={() => setSearchCategory('')} className="text-slate-400 hover:text-red-500 transition-colors">
+                        <Icon name="x-circle" className="w-4 h-4"/>
+                     </button>
+                  </div>
+               )}
+            </div>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <StatCard title="ผู้เข้าชม" count={totalVisits.toLocaleString()} icon="users" color="bg-gradient-to-br from-orange-500 to-red-500" onClick={() => {}} />
+            <StatCard title="นวัตกรรม" count={systems.length} icon="box" color="bg-gradient-to-br from-blue-500 to-cyan-500" onClick={() => setActiveTab('systems')} />
+            <StatCard title="สื่อการสอน" count={materials.length} icon="file-text" color="bg-gradient-to-br from-emerald-500 to-teal-500" onClick={() => setActiveTab('materials')} />
+            <StatCard title="Best Practice" count={bestPractices.length} icon="award" color="bg-gradient-to-br from-purple-500 to-pink-500" onClick={() => setActiveTab('best_practices')} />
+         </div>
+
+         {renderSection('นวัตกรรม (แนะนำ)', 'box', recommendedSystems, 'systems')}
+         {renderSection('สื่อการสอน (แนะนำ)', 'file-text', recommendedMaterials, 'materials')}
+         {renderSection('Best Practice (แนะนำ)', 'award', recommendedBestPractices, 'best_practices')}
+      </div>
+      );
+    };
+
+    const ResourcePage = ({ title, icon, data = [], type, collection, isAdmin, onAdd, onUpdate, onDelete, onView, onStatUpdate }) => {
+      const [search, setSearch] = useState('');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [editItem, setEditItem] = useState(null);
+
+      const filtered = data.filter(d => d && ((d.title || '').toLowerCase().includes(search.toLowerCase()) || (d.description || '').toLowerCase().includes(search.toLowerCase())));
+
+      return (
+        <div className="space-y-6 animate-fade-in">
+           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 glass-effect">
+              <div className="flex flex-col md:flex-row justify-between gap-4 md:items-center">
+                 <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-3 text-slate-800">
+                       <span className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white p-2.5 rounded-lg shadow-md"><Icon name={icon} className="w-6 h-6"/></span> 
+                       <span className="gradient-text">{title}</span>
+                    </h2>
+                    <p className="text-slate-500 mt-2 text-sm">ค้นหาและดาวน์โหลดทรัพยากรเพื่อการศึกษา</p>
+                 </div>
+                 <div className="flex flex-col md:flex-row gap-3">
+                    <div className="relative">
+                       <Icon name="search" className="absolute left-3 top-2.5 w-4 h-4 text-slate-400"/>
+                       <input className="pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm w-full md:w-64 transition-all form-input" placeholder="ค้นหา..." value={search} onChange={e=>setSearch(e.target.value)}/>
+                    </div>
+                    <button onClick={() => {setEditItem(null); setIsModalOpen(true);}} className="btn-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all">
+                       <Icon name="plus" className="w-4 h-4"/> 
+                       <span>แบ่งปันผลงาน</span>
+                    </button>
+                 </div>
+              </div>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map(item => (
+                 <div key={item.id} className="resource-card group flex flex-col h-full" 
+                    onClick={() => {
+                        onView({...item, type, collection});
+                        if (onStatUpdate) onStatUpdate(collection, item.id, 'views', item.views);
+                    }}
+                 >
+                    <div className="h-44 bg-gradient-to-br from-slate-100 to-slate-50 relative overflow-hidden group-hover:brightness-95 transition-all">
+                       {item.image ? <img src={item.image} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e)=>e.target.src='https://placehold.co/600x400?text=No+Image'}/> : <div className="flex items-center justify-center h-full text-slate-300 bg-slate-50"><Icon name="image" className="w-12 h-12 opacity-50"/></div>}
+                       {isAdmin && <div className="absolute top-2 right-2 flex gap-1 bg-white/90 p-1.5 rounded-lg shadow-md opacity-100 md:opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm z-20" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={(e)=> {e.stopPropagation(); setEditItem(item); setIsModalOpen(true);}} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition"><Icon name="edit" className="w-4 h-4"/></button>
+                          <button onClick={(e)=> {e.stopPropagation(); onDelete(collection, item.id)}} className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition"><Icon name="trash-2" className="w-4 h-4"/></button>
+                       </div>}
+                       <div className="absolute bottom-2 left-2">
+                          <span className="category-badge">{item.category || 'General'}</span>
+                       </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                       <h3 className="font-bold text-lg mb-2 text-slate-800 line-clamp-1 group-hover:text-indigo-600 transition-colors" title={item.title}>{item.title}</h3>
+                       <p className="text-sm text-slate-500 line-clamp-3 mb-4 flex-1 leading-relaxed">{item.description}</p>
+                       <div className="mb-3 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg">
+                          {item.author && <p className="flex items-center gap-1 font-medium"><Icon name="user" className="w-3 h-3"/> {item.author}</p>}
+                       </div>
+
+                       <div className="flex items-center gap-4 text-xs text-slate-500 mb-4 border-b border-slate-50 pb-3">
+                          <div className="flex items-center gap-1.5"><Icon name="eye" className="w-3.5 h-3.5 text-blue-500"/> {item.views || 0}</div>
+                          <div className="flex items-center gap-1.5"><Icon name="download" className="w-3.5 h-3.5 text-emerald-500"/> {item.downloads || 0}</div>
+                          <div className="flex items-center gap-1.5"><Icon name="star" className="w-3.5 h-3.5 text-yellow-400 fill-current"/> {item.rating || 0}</div>
+                       </div>
+                       
+                       <div className="border-t border-slate-100 pt-4 mt-auto">
+                          <div className="flex flex-wrap gap-2 justify-end">
+                             <button className="text-xs flex items-center gap-1.5 bg-gradient-to-r from-indigo-200 to-purple-200 text-indigo-950 px-3 py-1.5 rounded-lg hover:shadow-lg transition font-medium w-full justify-center group">
+                             <Icon name="eye" className="w-3.5 h-3.5 text-indigo-600 group-hover:scale-110 transition"/> ดูรายละเอียด
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              ))}
+              {filtered.length === 0 && <div className="col-span-full text-center py-16 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl bg-gradient-to-br from-slate-50 to-white">
+                 <Icon name="search-x" className="w-12 h-12 mx-auto mb-3 opacity-20"/>
+                 <p>ไม่พบข้อมูลในกลุ่มสาระนี้</p>
+              </div>}
+           </div>
+
+           {isModalOpen && <ItemModal isOpen={isModalOpen} onClose={()=>setIsModalOpen(false)} onSubmit={(d) => { if(editItem) onUpdate(collection, editItem.id, d); else onAdd(collection, d); setIsModalOpen(false); }} initialData={editItem} type={type} />}
+        </div>
+      );
+    };
+
+    const ViewModal = ({ isOpen, onClose, item, type, onStatUpdate, onRate, collection }) => {
+      if (!isOpen || !item) return null;
+      const handleAction = (action, url) => {
+         if (!url || url === '#') return;
+         if (onStatUpdate) {
+            onStatUpdate(collection, item.id, action === 'download' ? 'downloads' : 'views', item[action === 'download' ? 'downloads' : 'views']);
+         }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in" onClick={(e) => e.target === e.currentTarget && onClose()}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col relative glass-effect">
+            <button onClick={onClose} className="absolute top-4 right-4 bg-gradient-to-br from-slate-800 to-slate-900 text-white p-2 rounded-full hover:scale-110 transition z-10 shadow-lg"><Icon name="x" className="w-5 h-5"/></button>
+            <div className="relative h-64 bg-gradient-to-br from-slate-100 to-slate-50 flex-shrink-0">
+               {item.image ? <img src={item.image} className="w-full h-full object-cover" onError={(e)=>e.target.src='https://placehold.co/600x400?text=No+Image'}/> : <div className="flex items-center justify-center h-full text-slate-300"><Icon name="image" className="w-16 h-16 opacity-50"/></div>}
+               <div className="absolute bottom-4 left-4"><span className="category-badge shadow-lg">{item.category || 'General'}</span></div>
+            </div>
+            <div className="p-6">
+               <div className="flex justify-between items-start mb-2">
+                 <h2 className="text-2xl font-bold text-slate-800 gradient-text">{item.title}</h2>
+                 <div className="flex flex-col items-end">
+                    <div className="flex items-center gap-1 star-rating">
+                       {[1, 2, 3, 4, 5].map((star) => (
+                          <button key={star} onClick={() => onRate(collection, item.id, star)} className="focus:outline-none transition hover:scale-110">
+                             <Icon name="star" className={`w-5 h-5 ${star <= Math.round(item.rating || 0) ? 'text-yellow-400 fill-current active' : 'text-slate-200'}`}/>
+                          </button>
+                       ))}
+                    </div>
+                    <span className="text-xs text-slate-400 mt-1">({item.rating || 0} คะแนน)</span>
+                 </div>
+               </div>
+
+               <div className="mb-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-100 flex flex-col gap-1">
+                 <div className="text-sm text-slate-700 font-semibold flex items-center gap-2"><Icon name="user" className="w-4 h-4 text-indigo-500"/> ผู้จัดทำ: {item.author || '-'}</div>
+                 <div className="text-xs text-slate-500 ml-6">ตำแหน่ง: {item.position || '-'}</div>
+                 <div className="text-xs text-slate-500 ml-6">โรงเรียน: {item.school || '-'}</div>
+               </div>
+
+               <div className="flex items-center gap-6 text-sm text-slate-500 mb-6 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full"><Icon name="eye" className="w-4 h-4"/> {item.views || 0} เข้าชม</div>
+                  <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full"><Icon name="download" className="w-4 h-4"/> {item.downloads || 0} ดาวน์โหลด</div>
+               </div>
+               
+               <div className="mb-6">
+                  <h4 className="font-bold text-slate-700 mb-2 flex items-center gap-2"><Icon name="file-text" className="w-4 h-4 text-indigo-500"/> รายละเอียด</h4>
+                  <p className="text-slate-600 leading-relaxed whitespace-pre-wrap bg-slate-50 p-3 rounded-lg">{item.description || 'ไม่มีรายละเอียด'}</p>
+               </div>
+               <div className="flex flex-wrap gap-3 mt-4 pt-6 border-t border-slate-100">
+                  {item.tutorialLink && <a href={item.tutorialLink} target="_blank" onClick={() => handleAction('view', item.tutorialLink)} className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-lg font-medium hover:shadow-lg transition flex items-center justify-center gap-2 shadow-md"><Icon name="video" className="w-5 h-5"/> คลิปสอน</a>}
+                  {item.demoLink && <a href={item.demoLink} target="_blank" onClick={() => handleAction('view', item.demoLink)} className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 rounded-lg font-medium hover:shadow-lg transition flex items-center justify-center gap-2 shadow-md"><Icon name="monitor" className="w-5 h-5"/> ตัวอย่างระบบ</a>}
+                  {item.link && <a href={item.link} target="_blank" onClick={() => handleAction('download', item.link)} className="flex-[2] btn-primary py-3 rounded-lg font-medium hover:shadow-lg transition flex items-center justify-center gap-2 shadow-lg">
+                    {type === 'system' ? <><Icon name="download" className="w-5 h-5"/> ดาวน์โหลดระบบ</> : <><Icon name="external-link" className="w-5 h-5"/> เปิดดูลิงก์</>}
+                  </a>}
+               </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const ItemModal = ({ isOpen, onClose, onSubmit, initialData, type }) => {
+       const [form, setForm] = useState({ 
+          title:'', description:'', category:'', image:'', link:'', promptContent:'', 
+          tutorialLink:'', demoLink:'', views: 0, downloads: 0, rating: 5.0, 
+          author: '', position: '', school: '',
+          ...initialData 
+       });
+       const [filePreview, setFilePreview] = useState(initialData?.image || '');
+       
+       const handleFile = (e) => {
+         const file = e.target.files[0];
+         if(file && file.size < 800 * 1024) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { setForm({...form, image: ev.target.result}); setFilePreview(ev.target.result); };
+            reader.readAsDataURL(file);
+         } else { Swal.fire('แจ้งเตือน', 'ไฟล์ใหญ่เกิน 800KB', 'warning'); }
+       };
+
+       const handleSubmit = async (e) => { e.preventDefault(); onSubmit(form); };
+
+       return (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col glass-effect">
+                <div className="modal-header p-5 text-white flex justify-between items-center sticky top-0 z-10 shadow-md">
+                   <h3 className="font-bold text-lg flex gap-2 items-center"><Icon name={initialData ? 'edit' : 'plus'} className="w-5 h-5"/> {initialData ? 'แก้ไขข้อมูล' : 'แบ่งปันผลงาน'}</h3>
+                   <button type="button" onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-full transition"><Icon name="x" className="w-5 h-5"/></button>
+                </div>
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                   <div className="p-3 bg-gradient-to-r from-slate-50 to-indigo-50 rounded-lg border border-slate-100 space-y-3">
+                      <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Icon name="user-check" className="w-3 h-3"/> ข้อมูลผู้จัดทำ</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                         <div className="col-span-2">
+                            <label className="text-xs font-medium block mb-1 text-slate-700">ชื่อ-สกุล</label>
+                            <input required className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none focus:border-indigo-500 form-input" placeholder="ระบุชื่อผู้จัดทำ..." value={form.author} onChange={e=>setForm({...form, author:e.target.value})} />
+                         </div>
+                         <div>
+                            <label className="text-xs font-medium block mb-1 text-slate-700">ตำแหน่ง</label>
+                            <input className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none focus:border-indigo-500 form-input" placeholder="ครู, ผอ., ฯลฯ" value={form.position} onChange={e=>setForm({...form, position:e.target.value})} />
+                         </div>
+                         <div>
+                            <label className="text-xs font-medium block mb-1 text-slate-700">โรงเรียน/หน่วยงาน</label>
+                            <input className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none focus:border-indigo-500 form-input" placeholder="ระบุสังกัด..." value={form.school} onChange={e=>setForm({...form, school:e.target.value})} />
+                         </div>
+                      </div>
+                   </div>
+
+                   <div><label className="text-sm font-medium block mb-1.5 text-slate-700">{type === 'best_practice' ? 'ชื่อผลงาน/นวัตกรรม' : 'ชื่อรายการ'}</label><input required className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm form-input" placeholder="ระบุชื่อ..." value={form.title} onChange={e=>setForm({...form, title:e.target.value})} /></div>
+                   <div><label className="text-sm font-medium block mb-1.5 text-slate-700">กลุ่มสาระ</label><select className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white form-input" value={form.category} onChange={e=>setForm({...form, category:e.target.value})}><option value="">-- เลือกกลุ่มสาระ --</option><option>ภาษาไทย</option><option>คณิตศาสตร์</option><option>วิทยาศาสตร์และเทคโนโลยี</option><option>สังคมศึกษา ศาสนาและวัฒนธรรม</option><option>สุขศึกษาและพลศึกษา</option><option>ศิลปะ</option><option>การงานอาชีพ</option><option>ภาษาต่างประเทศ</option><option>กิจกรรมพัฒนาผู้เรียน</option></select></div>
+                   
+                   {type === 'system' && (
+                     <div className="grid grid-cols-3 gap-3 bg-gradient-to-r from-slate-50 to-blue-50 p-3 rounded-lg border border-slate-100">
+                        <div><label className="text-xs font-semibold text-slate-500 block mb-1">ยอดเข้าชม</label><input type="number" className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none form-input" value={form.views} onChange={e=>setForm({...form, views: parseInt(e.target.value) || 0})}/></div>
+                        <div><label className="text-xs font-semibold text-slate-500 block mb-1">ยอดดาวน์โหลด</label><input type="number" className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none form-input" value={form.downloads} onChange={e=>setForm({...form, downloads: parseInt(e.target.value) || 0})}/></div>
+                        <div><label className="text-xs font-semibold text-slate-500 block mb-1">คะแนน (5.0)</label><input type="number" step="0.1" max="5" className="w-full border border-slate-300 p-2 rounded-md text-sm outline-none form-input" value={form.rating} onChange={e=>setForm({...form, rating: parseFloat(e.target.value) || 0})}/></div>
+                     </div>
+                   )}
+
+                   <div><label className="text-sm font-medium block mb-1.5 text-slate-700">รายละเอียด</label><textarea className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm form-input" rows="3" placeholder="รายละเอียดเพิ่มเติม..." value={form.description} onChange={e=>setForm({...form, description:e.target.value})}></textarea></div>
+                   
+                   {['system', 'material', 'best_practice'].includes(type) && <div className="grid grid-cols-2 gap-3 bg-gradient-to-r from-slate-50 to-indigo-50 p-3 rounded-lg border border-slate-100">
+                      <div><label className="text-xs font-semibold text-slate-500 block mb-1">ลิ้งค์คลิปสอน</label><input className="w-full border border-slate-300 p-2 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 outline-none form-input" placeholder="Youtube URL" value={form.tutorialLink} onChange={e=>setForm({...form, tutorialLink:e.target.value})}/></div>
+                      <div><label className="text-xs font-semibold text-slate-500 block mb-1">ลิ้งค์ตัวอย่าง</label><input className="w-full border border-slate-300 p-2 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 outline-none form-input" placeholder="Demo URL" value={form.demoLink} onChange={e=>setForm({...form, demoLink:e.target.value})}/></div>
+                   </div>}
+                   
+                   {type === 'prompt' && <div><label className="text-sm font-medium block mb-1.5 text-slate-700">Prompt Content</label><textarea className="w-full border border-slate-300 p-2.5 rounded-lg font-mono text-sm bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none form-input" rows="4" placeholder="ใส่ข้อความ Prompt..." value={form.promptContent} onChange={e=>setForm({...form, promptContent:e.target.value})}></textarea></div>}
+
+                   <div>
+                      <label className="text-sm font-medium block mb-1.5 text-slate-700">รูปภาพปก</label>
+                      <div className="border-2 border-dashed border-slate-300 p-6 rounded-xl text-center cursor-pointer hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:border-indigo-300 transition relative group">
+                         <input type="file" accept="image/*" onChange={handleFile} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                         <div className="flex flex-col items-center text-slate-400 gap-2 group-hover:text-indigo-500"><Icon name="upload-cloud" className="w-8 h-8"/><span className="text-xs font-medium">คลิกเพื่ออัปโหลด (Max 800KB)</span></div>
+                      </div>
+                      {filePreview && <div className="mt-3 h-40 bg-gradient-to-br from-slate-100 to-slate-50 rounded-lg overflow-hidden relative border border-slate-200 shadow-sm"><img src={filePreview} referrerPolicy="no-referrer" className="w-full h-full object-cover"/><button type="button" onClick={()=>{setForm({...form, image:''}); setFilePreview('')}} className="absolute top-2 right-2 bg-gradient-to-br from-red-500 to-pink-500 text-white p-1.5 rounded-full hover:shadow-lg transition shadow-md z-20"><Icon name="x" className="w-4 h-4"/></button></div>}
+                   </div>
+
+                   <div><label className="text-sm font-medium block mb-1.5 text-slate-700">ลิงก์ไฟล์ / ระบบปลายทาง</label><input className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm form-input" placeholder="Google Drive / Website URL..." value={form.link} onChange={e=>setForm({...form, link:e.target.value})}/></div>
+                   
+                   <div className="pt-4 border-t border-slate-100 flex justify-end gap-3 security-block pb-2">
+                      <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition" >ยกเลิก</button>
+                      <button type="submit" className="btn-primary px-5 py-2.5 rounded-lg text-white font-medium shadow-md hover:shadow-lg transition flex items-center gap-2">
+                         บันทึกข้อมูล
+                      </button>
+                   </div>
+                </form>
+             </div>
+          </div>
+       )
+    };
+
+    const ApprovePage = ({ items, onApprove, onReject }) => {
+        return (
+            <div className="space-y-6 animate-fade-in">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 glass-effect flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                        <span className="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-2.5 rounded-lg shadow-md"><Icon name="clipboard-check" className="w-6 h-6"/></span> 
+                        <span className="gradient-text">ตรวจสอบ/อนุมัติ</span>
+                    </h2>
+                    <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md notification-badge">{items.length} รายการรอตรวจสอบ</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.length > 0 ? items.map((item) => (
+                        <div key={item.id} className="resource-card border-amber-200">
+                            <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-3 py-1.5 rounded shadow-lg z-10 flex items-center gap-1">
+                                <Icon name="clock" className="w-3 h-3"/> รออนุมัติ
+                            </div>
+                            <div className="h-40 bg-gradient-to-br from-amber-50 to-orange-50 relative overflow-hidden">
+                                {item.image ? <img src={item.image} className="w-full h-full object-cover opacity-80" onError={(e)=>e.target.src='https://placehold.co/600x400?text=No+Image'}/> : <div className="flex items-center justify-center h-full text-slate-300"><Icon name="image" className="w-12 h-12 opacity-50"/></div>}
+                            </div>
+                            <div className="p-4 flex-1 flex flex-col">
+                                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                    <Icon name={item.type === 'system' ? 'box' : item.type === 'material' ? 'file-text' : 'award'} className="w-3 h-3"/>
+                                    {item.type === 'system' ? 'นวัตกรรม' : item.type === 'material' ? 'สื่อการสอน' : 'Best Practice'}
+                                </span>
+                                <h3 className="font-bold text-lg text-slate-800 mb-1">{item.title}</h3>
+                                <p className="text-sm text-slate-500 mb-3 flex-1 line-clamp-2">{item.description}</p>
+                                <div className="text-xs text-slate-500 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg border border-amber-100">
+                                    <div className="font-semibold flex items-center gap-1"><Icon name="user" className="w-3 h-3"/>{item.author}</div>
+                                    <div className="pl-4 mt-1">{item.school}</div>
+                                </div>
+                                <div className="flex gap-2 pt-3 border-t border-slate-100">
+                                    <button onClick={() => onApprove(item)} className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 rounded-lg text-sm font-medium hover:shadow-lg flex items-center justify-center gap-1 transition shadow-md">
+                                        <Icon name="check" className="w-4 h-4"/> อนุมัติ
+                                    </button>
+                                    <button onClick={() => onReject(item)} className="flex-1 bg-gradient-to-r from-red-50 to-pink-50 text-red-600 py-2 rounded-lg text-sm font-medium hover:shadow flex items-center justify-center gap-1 transition border border-red-100">
+                                        <Icon name="trash-2" className="w-4 h-4"/> ลบ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )) : (
+                        <div className="col-span-full py-16 text-center text-slate-400 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-200 rounded-xl">
+                            <Icon name="check-circle" className="w-12 h-12 mx-auto mb-3 text-emerald-400 opacity-50"/>
+                            <p className="text-emerald-600 font-medium">ไม่มีรายการรอตรวจสอบ</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    // --- 4. อัปเดตคอมโพเนนต์รายงานสรุปผลงาน (เพิ่มคอลัมน์และระบบแปลงสไตล์วันที่เป็นไทยเรียบร้อย) ---
+    const ReportPage = ({ systems, materials, bestPractices }) => {
+      const [filterAuthor, setFilterAuthor] = useState('all');
+
+      const allData = useMemo(() => [
+         ...systems.map(i => ({...i, type: 'นวัตกรรม'})),
+         ...materials.map(i => ({...i, type: 'สื่อการสอน'})),
+         ...bestPractices.map(i => ({...i, type: 'Best Practice'}))
+      ], [systems, materials, bestPractices]);
+
+      const authors = useMemo(() => {
+         const list = allData.map(item => item.author || 'ไม่ระบุ').filter((v, i, a) => a.indexOf(v) === i);
+         return list.sort();
+      }, [allData]);
+
+      const filteredData = useMemo(() => {
+         if (filterAuthor === 'all') return allData;
+         return allData.filter(item => (item.author || 'ไม่ระบุ') === filterAuthor);
+      }, [allData, filterAuthor]);
+
+      const totals = useMemo(() => {
+         return filteredData.reduce((acc, item) => ({
+            count: acc.count + 1,
+            views: acc.views + (parseInt(item.views) || 0),
+            downloads: acc.downloads + (parseInt(item.downloads) || 0)
+         }), { count: 0, views: 0, downloads: 0 });
+      }, [filteredData]);
+
+      // ฟังก์ชันช่วยจัดฟอร์แมตวันที่ให้อ่านง่ายสไตล์ไทย
+      const formatThaiDate = (isoString) => {
+        if (!isoString) return '-';
+        try {
+          const date = new Date(isoString);
+          if (isNaN(date.getTime())) return '-';
+          return date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+        } catch (e) {
+          return '-';
+        }
+      };
+
+      const handlePrint = () => { window.print(); };
+
+      return (
+         <div id="report-container" className="space-y-6 animate-fade-in bg-white p-6 rounded-xl shadow-sm border border-slate-100 glass-effect">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 print-hidden mb-6 border-b pb-4">
+               <div>
+                  <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2 gradient-text">
+                     <Icon name="file-text" className="w-6 h-6 text-indigo-600"/> รายงานสรุปผลงาน
+                  </h2>
+                  <p className="text-sm text-slate-500">ระบบบริหารจัดการสื่อการสอนและนวัตกรรม</p>
+               </div>
+               <div className="flex items-center gap-3">
+                  <select 
+                     className="border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white form-input"
+                     value={filterAuthor}
+                     onChange={(e) => setFilterAuthor(e.target.value)}
+                  >
+                     <option value="all">-- แสดงทั้งหมด --</option>
+                     {authors.map((author, i) => <option key={i} value={author}>{author}</option>)}
+                  </select>
+                  <button onClick={handlePrint} className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 hover:shadow-lg transition shadow-sm">
+                     <Icon name="printer" className="w-4 h-4"/> พิมพ์รายงาน
+                  </button>
+               </div>
+            </div>
+
+            <div className="hidden print:block text-center mb-8">
+               <h1 className="text-2xl font-bold text-black mb-2">รายงานสรุปข้อมูลสื่อและนวัตกรรม</h1>
+               <p className="text-sm text-slate-600">
+                  {filterAuthor === 'all' ? 'รายงานภาพรวมทั้งหมด' : `รายงานผลงานของ: ${filterAuthor}`}
+               </p>
+               <p className="text-xs text-slate-400 mt-1">พิมพ์เมื่อ: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' })}</p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-6">
+               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-lg text-center border border-indigo-100">
+                  <div className="text-indigo-600 font-bold text-2xl gradient-text">{totals.count}</div>
+                  <div className="text-xs text-indigo-400 font-medium uppercase">รายการทั้งหมด</div>
+               </div>
+               <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-lg text-center border border-emerald-100">
+                  <div className="text-emerald-600 font-bold text-2xl gradient-text">{totals.views.toLocaleString()}</div>
+                  <div className="text-xs text-emerald-400 font-medium uppercase">ยอดเข้าชมรวม</div>
+               </div>
+               <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-4 rounded-lg text-center border border-orange-100">
+                  <div className="text-orange-600 font-bold text-2xl gradient-text">{totals.downloads.toLocaleString()}</div>
+                  <div className="text-xs text-orange-400 font-medium uppercase">ยอดดาวน์โหลดรวม</div>
+               </div>
+            </div>
+
+            <div className="overflow-x-auto">
+               <table className="w-full text-left border-collapse">
+                  <thead>
+                     <tr className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-600 text-sm border-b border-slate-200">
+                        <th className="p-3 font-semibold border border-slate-200 text-center">ลำดับ</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">ประเภท</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">ชื่อรายการ</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">กลุ่มสาระ</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">ผู้จัดทำ</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">วันที่อัปโหลด</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">เข้าชม</th>
+                        <th className="p-3 font-semibold border border-slate-200 text-center">ดาวน์โหลด</th>
+                     </tr>
+                  </thead>
+                  <tbody className="text-sm text-slate-700">
+                     {filteredData.length > 0 ? filteredData.map((item, index) => (
+                        <tr key={index} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-indigo-50/30 hover:to-purple-50/30 print:border-slate-300">
+                           <td className="p-3 border border-slate-200 text-center w-12 font-bold text-indigo-600">{index + 1}</td>
+                           <td className="p-3 border border-slate-200 w-32">
+                              <span className={`px-2 py-1 rounded text-xs font-medium border ${item.type === 'นวัตกรรม' ? 'bg-blue-100 text-blue-700 border-blue-200' : item.type === 'สื่อการสอน' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-purple-100 text-purple-700 border-purple-200'}`}>
+                                 {item.type}
+                              </span>
+                           </td>
+                           <td className="p-3 border border-slate-200 font-medium">{item.title}</td>
+                           <td className="p-3 border border-slate-200 font-medium">{item.category}</td>
+                           <td className="p-3 border border-slate-200">
+                              <div className="font-medium">{item.author || '-'}</div>
+                              <div className="text-xs text-slate-400">{item.school}</div>
+                           </td>
+                           <td className="p-3 border border-slate-200 text-center whitespace-nowrap text-slate-600 text-xs">
+                              {formatThaiDate(item.created_at)}
+                           </td>
+                           <td className="p-3 border border-slate-200 text-center font-mono bg-blue-50/50">{item.views || 0}</td>
+                           <td className="p-3 border border-slate-200 text-center font-mono bg-emerald-50/50">{item.downloads || 0}</td>
+                        </tr>
+                     )) : (
+                        <tr><td colSpan="8" className="p-8 text-center text-slate-400 border border-slate-200">ไม่พบข้อมูล</td></tr>
+                     )}
+                  </tbody>
+               </table>
+            </div>
+            
+            <div className="hidden print:flex justify-between mt-12 pt-8">
+               <div className="text-center w-1/3">
+                  <div className="border-b border-black w-3/4 mx-auto mb-2"></div>
+                  <p className="text-xs">ลงชื่อเจ้าหน้าที่</p>
+               </div>
+               <div className="text-center w-1/3">
+                  <div className="border-b border-black w-3/4 mx-auto mb-2"></div>
+                  <p className="text-xs">ลงชื่อผู้อำนวยการ</p>
+               </div>
+            </div>
+         </div>
+      );
+    };
+
+    const LoginModal = ({ isOpen, onClose, onLogin }) => {
+       const [p, setP] = useState('');
+       return isOpen ? (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+             <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm glass-effect">
+                <div className="text-center mb-6">
+                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white shadow-md">
+                     <Icon name="lock" className="w-6 h-6"/>
+                   </div>
+                   <h3 className="font-bold text-xl text-slate-800">ผู้ดูแลระบบ</h3>
+                   <p className="text-sm text-slate-500 mt-1">กรุณายืนยันตัวตนเพื่อจัดการข้อมูล</p>
+                </div>
+                <input type="password" autoFocus className="w-full border border-slate-300 p-3 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 outline-none text-center tracking-widest form-input" placeholder="• • • • • •" value={p} onChange={e=>setP(e.target.value)} onKeyDown={e => e.key === 'Enter' && (onLogin(p) ? onClose() : Swal.fire('ผิดพลาด', 'รหัสผ่านไม่ถูกต้อง', 'error'))} />
+                <button onClick={()=>{if(onLogin(p)) onClose(); else Swal.fire('ผิดพลาด', 'รหัสผ่านไม่ถูกต้อง', 'error');}} className="btn-primary w-full text-white py-2.5 rounded-lg font-bold shadow-md hover:shadow-lg transition mb-3">เข้าสู่ระบบ</button>
+                <button onClick={onClose} className="w-full text-slate-400 text-sm hover:text-slate-600 transition">ยกเลิก</button>
+             </div>
+          </div>
+       ) : null;
+    };
+
+    const DeveloperPage = ({ isGAS }) => (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden animate-fade-in glass-effect">
+         <div className="developer-header h-40 relative p-8">
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div className="relative z-10">
+               <h2 className="text-3xl font-bold text-white mb-2">สํานักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู</h2>
+            </div>
+         </div>
+         <div className="px-8 pb-10">
+            <div className="flex flex-col md:flex-row items-center md:items-end -mt-12 mb-6 gap-6">
+               <div className="w-28 h-28 bg-white p-1.5 rounded-full shadow-lg relative z-10 border-4 border-white">
+                  <img src={LOGO_URL} className="w-full h-full rounded-full object-cover" alt="Kru Permang" />
+               </div>
+               <div className="text-center md:text-left mb-2">
+                  <h2 className="text-2xl font-bold text-slate-500 gradient-text">กลุ่มนิเทศ ติดตาม และประเมินผลการจัดการศึกษา</h2>
+                  <p className="text-indigo-600 font-medium">กลุ่มงานส่งเสริมและพัฒนาสื่อ นวัตกรรมและเทคโนโลยีทางการศึกษา</p>
+               </div>
+            </div>
+            
+            <p className="text-slate-600 leading-relaxed mb-8 text-center md:text-left bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg border border-indigo-100">
+               สวัสดีครับ ยินดีต้อนรับสู่ระบบบริหารจัดการสื่อการสอนที่พัฒนาขึ้นเพื่ออำนวยความสะดวกในการจัดเก็บและเผยแพร่ข้อมูลเพื่อการศึกษาไทย
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+               <div className="bg-gradient-to-br from-slate-50 to-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                  <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2"><Icon name="server" className="w-4 h-4 text-indigo-500"/>ผู้รับผิดชอบ</h4>
+                  <div className="space-y-2 text-sm">
+                     <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-slate-500">นางดวงเดือน อินเจริญ ศึกษานิเทศก์</span>
+                        <span>Tel. 0872138493</span>
+                     </div>
+                     <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-slate-500">นางสาวครองขวัญ เคยชัยภูมิ ศึกษานิเทศก์</span>
+                        <span>Tel. 0885633325</span>
+                     </div>
+                     <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-slate-500">นางสาวชลธิชา ผาสุข ศึกษานิเทศก์</span>
+                        <span>Tel. 0973186053</span>
+                     </div>
+                     <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-slate-500">นายหิรัญทรัพย์ เพียเสนา ศึกษานิเทศก์</span>
+                        <span>Tel. 0625909099</span>
+                     </div>
+                  </div>
+               </div>
+               <div className="bg-gradient-to-br from-slate-50 to-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                   <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2"><Icon name="settings" className="w-4 h-4 text-slate-500"/> การพัฒนาระบบ (Configuration)</h4>
+                   <div className="space-y-3">
+                      <div>
+                         <span className="text-xs text-slate-400 uppercase font-bold">System</span>
+                         <code className="block bg-gradient-to-r from-slate-100 to-white border border-slate-200 p-2 rounded text-xs text-slate-600 mt-1 font-mono break-all">Apps Script | Google for Developers</code>
+                      </div>
+                      <div>
+                         <span className="text-xs text-slate-400 uppercase font-bold">Database</span>
+                         <code className="block bg-gradient-to-r from-slate-100 to-white border border-slate-200 p-2 rounded text-xs text-slate-600 mt-1 font-mono">Apps Script | Google for Developers</code>
+                      </div>
+                   </div>
+               </div>
+            </div>
+         </div>
+      </div>
+    );
+    
+    // --- 6. Main Application ---
+    function KruPermangApp() {
+      const [isAdmin, setIsAdmin] = useState(false);
+      const [activeTab, setActiveTab] = useState('home');
+      const [loading, setLoading] = useState(true);
+      const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+      
+      const [viewItem, setViewItem] = useState(null);
+
+      const [systems, setSystems] = useState([]);
+      const [materials, setMaterials] = useState([]);
+      const [bestPractices, setBestPractices] = useState([]);
+      const [prompts, setPrompts] = useState([]);
+      const [donations, setDonations] = useState([]);
+      const [totalVisits, setTotalVisits] = useState(0);
+
+      useEffect(() => { loadAllData(); }, []);
+
+      const loadAllData = async () => {
+        try {
+          const visits = await server.logWebVisit();
+          setTotalVisits(visits);
+
+          const [sysData, matData, bpData, donData] = await Promise.all([
+            server.getData('systems'),
+            server.getData('materials'),
+            server.getData('best_practices'),
+            server.getData('donations')
+          ]);
+          setSystems(sysData);
+          setMaterials(matData);
+          setBestPractices(bpData);
+          setDonations(donData);
+          setLoading(false);
+        } catch (error) {
+          console.error("Load Error:", error);
+          setLoading(false);
+        }
+      };
+
+      const approvedSystems = useMemo(() => (systems || []).filter(i => i && (i.status === 'approved' || !i.status)), [systems]);
+      const approvedMaterials = useMemo(() => (materials || []).filter(i => i && (i.status === 'approved' || !i.status)), [materials]);
+      const approvedBestPractices = useMemo(() => (bestPractices || []).filter(i => i && (i.status === 'approved' || !i.status)), [bestPractices]);
+
+      const pendingItems = useMemo(() => {
+          return [
+              ...(systems || []).filter(i => i && i.status === 'pending').map(i => ({...i, type: 'system', collection: 'systems'})),
+              ...(materials || []).filter(i => i && i.status === 'pending').map(i => ({...i, type: 'material', collection: 'materials'})),
+              ...(bestPractices || []).filter(i => i && i.status === 'pending').map(i => ({...i, type: 'best_practice', collection: 'best_practices'}))
+          ];
+      }, [systems, materials, bestPractices]);
+
+      const showLoading = (title = 'กำลังดำเนินการ...') => {
+        Swal.fire({ title, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      };
+      const showSuccess = (title = 'สำเร็จ') => Swal.fire({ icon: 'success', title, showConfirmButton: false, timer: 1500 });
+      const showError = (text = 'เกิดข้อผิดพลาด') => Swal.fire({ icon: 'error', title: 'ผิดพลาด', text });
+
+      const handleStatUpdate = async (collectionName, id, statType, currentValue) => {
+        const newValue = (parseInt(currentValue) || 0) + 1;
+        const updateList = (list) => list.map(item => item.id === id ? { ...item, [statType]: newValue } : item);
+
+        if (collectionName === 'systems') setSystems(prev => updateList(prev));
+        if (collectionName === 'materials') setMaterials(prev => updateList(prev));
+        if (collectionName === 'best_practices') setBestPractices(prev => updateList(prev));
+
+        try { await server.updateData(collectionName, id, { [statType]: newValue }); } catch (error) { console.error("Failed to update stat:", error); }
+      };
+
+      const handleRate = async (collectionName, id, score) => {
+        try {
+           await server.rateItem(collectionName, id, score);
+           Swal.fire('ขอบคุณครับ!', `คุณให้คะแนน ${score} ดาว`, 'success');
+           const newData = await server.getData(collectionName);
+           if (collectionName === 'systems') setSystems(newData);
+           if (collectionName === 'materials') setMaterials(newData);
+           if (collectionName === 'best_practices') setBestPractices(newData);
+           
+           if (viewItem && viewItem.id === id) {
+               const updatedItem = newData.find(i => i.id === id);
+               if (updatedItem) setViewItem({...updatedItem, type: viewItem.type, collection: viewItem.collection});
+           }
+        } catch (e) { console.error(e); }
+      };
+
+      const handleAdminLogin = (passcode) => {
+        if (passcode === 'admin9099') {
+          setIsAdmin(true);
+          showSuccess('เข้าสู่ระบบผู้ดูแลเรียบร้อยแล้ว');
+          return true;
+        }
+        return false;
+      };
+
+      const handleLogout = () => {
+        setIsAdmin(false);
+        setActiveTab('home');
+        showSuccess('ออกจากระบบเรียบร้อยแล้ว');
+      };
+
+      const handleAdd = async (collectionName, item) => {
+        try {
+          showLoading('กำลังบันทึกข้อมูล...');
+          let finalItem = { ...item, status: 'pending' }; 
+          
+          if (item.image && item.image.startsWith('data:')) {
+             const mimeType = item.image.split(';')[0].split(':')[1];
+             finalItem.image = await server.uploadToDrive(item.image, `cover_${Date.now()}`, mimeType);
+          }
+          const savedItem = await server.addData(collectionName, finalItem);
+          
+          if(collectionName === 'systems') setSystems([...systems, savedItem]);
+          if(collectionName === 'materials') setMaterials([...materials, savedItem]);
+          if(collectionName === 'best_practices') setBestPractices([...bestPractices, savedItem]);
+          
+          Swal.fire({
+             icon: 'success',
+             title: 'ส่งข้อมูลเรียบร้อย',
+             text: 'ข้อมูลของคุณจะแสดงผลหลังจากผ่านการตรวจสอบจากผู้ดูแลระบบ',
+             timer: 3000
+          });
+        } catch (error) { showError(error.message); }
+      };
+
+      const handleUpdate = async (collectionName, id, updates) => {
+        try {
+           showLoading('กำลังอัปเดต...');
+           let finalUpdates = { ...updates };
+           if (updates.image && updates.image.startsWith('data:')) {
+             const mimeType = updates.image.split(';')[0].split(':')[1];
+             finalUpdates.image = await server.uploadToDrive(updates.image, `cover_update_${Date.now()}`, mimeType);
+           }
+           await server.updateData(collectionName, id, finalUpdates);
+           loadAllData();
+           showSuccess('อัปเดตเรียบร้อย');
+        } catch (error) { showError('อัปเดตไม่สำเร็จ'); }
+      };
+
+      const handleDelete = async (collectionName, id) => {
+        const result = await Swal.fire({
+            title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#d33', confirmButtonText: 'ลบเลย', cancelButtonText: 'ยกเลิก'
+        });
+        if (result.isConfirmed) {
+            try {
+                showLoading('กำลังลบ...');
+                await server.deleteData(collectionName, id);
+                if(collectionName === 'systems') setSystems(systems.filter(i => i.id !== id));
+                if(collectionName === 'materials') setMaterials(materials.filter(i => i.id !== id));
+                if(collectionName === 'best_practices') setBestPractices(bestPractices.filter(i => i.id !== id));
+                showSuccess('ลบเรียบร้อย');
+            } catch (error) { showError('ลบไม่สำเร็จ'); }
+        }
+      };
+
+      const handleApprove = async (item) => {
+          try {
+              showLoading('กำลังอนุมัติ...');
+              await server.updateData(item.collection, item.id, { status: 'approved' });
+              
+              const updateList = (list) => list.map(i => i.id === item.id ? { ...i, status: 'approved' } : i);
+              if(item.collection === 'systems') setSystems(prev => updateList(prev));
+              if(item.collection === 'materials') setMaterials(prev => updateList(prev));
+              if(item.collection === 'best_practices') setBestPractices(prev => updateList(prev));
+              
+              showSuccess('อนุมัติรายการเรียบร้อย');
+          } catch (error) {
+              showError('เกิดข้อผิดพลาดในการอนุมัติ');
+          }
+      };
+
+      if (loading) return <div className="flex flex-col items-center justify-center h-screen text-slate-400 gap-3 animated-bg">
+        <Icon name="loader-2" className="w-10 h-10 animate-spin text-indigo-500" />
+        <p className="font-medium animate-pulse gradient-text">กำลังโหลดข้อมูล...</p>
+      </div>;
+
+      return (
+        <div className="min-h-screen flex flex-col md:flex-row font-sans">
+          <nav className="hidden md:flex flex-col w-64 bg-gradient-to-b from-white to-slate-50 border-r border-slate-200 h-screen sticky top-0 shadow-sm z-10 print:hidden">
+            <div className="p-6 border-b border-slate-100 flex items-start gap-3">
+              <img src={LOGO_URL} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md mt-1" alt="Logo" />
+              <div>
+                <h1 className="text-xl font-bold text-indigo-600 leading-tight gradient-text">EIT Systems</h1>
+                <p className="text-[10px] text-slate-500 font-medium leading-tight mt-1">ระบบคลังสื่อการจัดการเรียนรู้<br/>| By สพม.เลย หนองบัวลำภู</p>
+              </div>
+            </div>
+            <div className="flex-1 py-4 space-y-1 overflow-y-auto px-2">
+               <NavButton active={activeTab === 'home'} onClick={() => setActiveTab('home')} icon="home" label="หน้าแรก" />
+               <NavButton active={activeTab === 'systems'} onClick={() => setActiveTab('systems')} icon="box" label="คลังนวัตกรรม" />
+               <NavButton active={activeTab === 'materials'} onClick={() => setActiveTab('materials')} icon="file-text" label="คลังสื่อการสอน" />
+               <NavButton active={activeTab === 'best_practices'} onClick={() => setActiveTab('best_practices')} icon="award" label="คลัง Best practice" />
+               
+               {isAdmin && (
+                  <>
+                    <div className="border-t border-slate-100 my-2 mx-2"></div>
+                    <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">ผู้ดูแลระบบ</div>
+                    <NavButton active={activeTab === 'approve'} onClick={() => setActiveTab('approve')} icon="clipboard-check" label={`ตรวจ/อนุมัติ (${pendingItems.length})`} />
+                    <NavButton active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} icon="clipboard-list" label="รายงานสรุป" />
+                  </>
+               )}
+
+               <div className="border-t border-slate-100 my-2 mx-2"></div>
+               <NavButton active={activeTab === 'developer'} onClick={() => setActiveTab('developer')} icon="user" label="ผู้พัฒนา" />
+            </div>
+            <div className="p-4 border-t border-slate-100 bg-gradient-to-t from-slate-50 to-white">
+               {!isAdmin ? 
+                 <button onClick={() => setIsLoginModalOpen(true)} className="flex items-center justify-center gap-2 text-sm text-slate-600 hover:text-indigo-600 w-full p-2.5 rounded-lg hover:bg-white transition border border-transparent hover:border-slate-200 font-medium glass-effect">
+                   <Icon name="log-in" className="w-4 h-4"/> Admin Login
+                 </button> :
+                 <div className="space-y-2">
+                    <div className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1 bg-gradient-to-r from-emerald-50 to-teal-50 py-1.5 rounded border border-emerald-100">
+                       <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> Admin Mode
+                    </div>
+                    <button onClick={handleLogout} className="flex items-center justify-center gap-2 text-sm text-red-500 hover:text-red-700 w-full p-2.5 rounded-lg hover:bg-red-50 transition font-medium border border-red-100">
+                       <Icon name="log-out" className="w-4 h-4"/> Logout
+                    </button>
+                 </div>
+               }
+            </div>
+          </nav>
+
+          <div className="md:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 flex justify-between items-center shadow-lg z-20 sticky top-0 print:hidden">
+             <div className="flex items-center gap-3">
+               <img src={LOGO_URL} className="w-10 h-10 rounded-full object-cover border-2 border-white/30 shadow-sm" alt="Logo" />
+               <div className="leading-tight">
+                 <h1 className="font-bold text-base">EIT Systems</h1>
+                 <p className="text-[10px] opacity-90 font-light">ระบบโหลดฟรีเพื่อการศึกษา | By สพม.เลย หนองบัวลำภู</p>
+               </div>
+             </div>
+             <div className="flex gap-2">
+                <button onClick={() => { if(!isAdmin) setIsLoginModalOpen(true); }} className="p-2 rounded hover:bg-white/10 transition">
+                  {isAdmin ? <Icon name="shield-check" className="w-5 h-5 text-emerald-300"/> : <Icon name="lock" className="w-5 h-5"/>}
+                </button>
+                <button onClick={() => document.getElementById('mobile-menu-overlay').classList.remove('hidden')} className="p-2 rounded hover:bg-white/10 transition">
+                  <Icon name="menu" className="w-6 h-6" />
+                </button>
+             </div>
+          </div>
+          
+          <div id="mobile-menu-overlay" className="hidden fixed inset-0 bg-black/50 z-40 md:hidden animate-fade-in print:hidden" onClick={(e) => e.target.id === 'mobile-menu-overlay' && e.target.classList.add('hidden')}>
+             <div className="bg-white w-3/4 h-full p-6 space-y-4 shadow-2xl absolute right-0 top-0 glass-effect">
+               <div className="flex justify-between items-center mb-6 border-b pb-4">
+                  <div className="flex items-center gap-3">
+                    <img src={LOGO_URL} className="w-10 h-10 rounded-full border border-slate-100 shadow-sm" alt="Logo"/> 
+                    <div>
+                      <h2 className="font-bold text-lg gradient-text leading-tight">สพม.เลย หนองบัวลำภู</h2>
+                      <p className="text-[10px] text-slate-500">ระบบโหลดฟรีเพื่อการศึกษา | By สพม.เลย หนองบัวลำภู</p>
+                    </div>
+                  </div>
+                  <button onClick={() => document.getElementById('mobile-menu-overlay').classList.add('hidden')}>
+                    <Icon name="x" className="w-6 h-6 text-slate-400"/>
+                  </button>
+               </div>
+               <NavButton active={activeTab === 'home'} onClick={() => {setActiveTab('home'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="home" label="หน้าแรก" />
+               <NavButton active={activeTab === 'systems'} onClick={() => {setActiveTab('systems'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="box" label="คลังนวัตกรรม" />
+               <NavButton active={activeTab === 'materials'} onClick={() => {setActiveTab('materials'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="file-text" label="คลังสื่อการสอน" />
+               <NavButton active={activeTab === 'best_practices'} onClick={() => {setActiveTab('best_practices'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="award" label="คลัง Best practice" />
+               
+               {isAdmin && (
+                  <>
+                     <div className="border-t pt-2 mt-2"></div>
+                     <NavButton active={activeTab === 'approve'} onClick={() => {setActiveTab('approve'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="clipboard-check" label={`ตรวจ/อนุมัติ (${pendingItems.length})`} />
+                     <NavButton active={activeTab === 'reports'} onClick={() => {setActiveTab('reports'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="clipboard-list" label="รายงานสรุป" />
+                  </>
+               )}
+
+               <div className="border-t pt-4 mt-4">
+                  <NavButton active={activeTab === 'developer'} onClick={() => {setActiveTab('developer'); document.getElementById('mobile-menu-overlay').classList.add('hidden')}} icon="user" label="ผู้พัฒนา" />
+               </div>
+             </div>
+          </div>
+
+          <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-50 print:bg-white print:p-0 print:overflow-visible graphic-bg">
+             <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)]">
+                {activeTab === 'home' && <HomePage systems={approvedSystems} materials={approvedMaterials} bestPractices={approvedBestPractices} totalVisits={totalVisits} setActiveTab={setActiveTab} onView={setViewItem} />}
+                
+                {activeTab === 'systems' && <ResourcePage title="คลังนวัตกรรม" icon="box" data={approvedSystems} type="system" collection="systems" isAdmin={isAdmin} onAdd={handleAdd} onUpdate={handleUpdate} onDelete={handleDelete} onView={setViewItem} onStatUpdate={handleStatUpdate} />}
+                
+                {activeTab === 'materials' && <ResourcePage title="คลังสื่อการสอน" icon="file-text" data={approvedMaterials} type="material" collection="materials" isAdmin={isAdmin} onAdd={handleAdd} onUpdate={handleUpdate} onDelete={handleDelete} onView={setViewItem} onStatUpdate={handleStatUpdate} />}
+                
+                {activeTab === 'best_practices' && <ResourcePage title="คลัง Best practice" icon="award" data={approvedBestPractices} type="best_practice" collection="best_practices" isAdmin={isAdmin} onAdd={handleAdd} onUpdate={handleUpdate} onDelete={handleDelete} onView={setViewItem} onStatUpdate={handleStatUpdate} />}
+                
+                {activeTab === 'approve' && isAdmin && (
+                   <ApprovePage items={pendingItems} onApprove={handleApprove} onReject={(item) => handleDelete(item.collection, item.id)} />
+                )}
+
+                {activeTab === 'reports' && isAdmin && (
+                  <ReportPage systems={approvedSystems} materials={approvedMaterials} bestPractices={approvedBestPractices} />
+                )}
+
+                {activeTab === 'developer' && <DeveloperPage isGAS={isGAS} />}
+             </div>
+             
+             <footer className="mt-12 bg-gradient-to-b from-slate-900 to-slate-950 border-t border-slate-800 pt-10 pb-6 text-slate-300 rounded-t-xl shadow-inner print:hidden">
+                <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                  <div className="flex flex-col items-center md:items-start">
+                    <h3 className="font-bold text-lg text-white flex items-center gap-2 mb-3">
+                      <img src={LOGO_URL} className="w-8 h-8 rounded-full border-2 border-slate-700" alt="Logo"/> 
+                      <span className="gradient-text">สพม.เลย หนองบัวลำภู</span>
+                    </h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                      ระบบบริหารจัดการสื่อการสอนและนวัตกรรมเพื่อการศึกษา มุ่งเน้นการพัฒนาและแบ่งปันความรู้เพื่อชุมชนครู
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start">
+                    <h4 className="font-bold text-white mb-4 border-b-2 border-indigo-500/30 pb-1 inline-block">ติดต่อเรา</h4>
+                    <ul className="space-y-3 text-sm w-full">
+                      <li><a href="mailto:info.media@sesao19.go.th" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition group">
+                        <span className="bg-slate-800 p-1.5 rounded-full group-hover:bg-indigo-600 transition">
+                          <Icon name="mail" className="w-4 h-4 text-slate-400 group-hover:text-white"/>
+                        </span> info.media@sesao19.go.th
+                      </a></li>
+                      <li><a href="https://web.sesao19.go.th/web/" target="_blank" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition group">
+                        <span className="bg-slate-800 p-1.5 rounded-full group-hover:bg-indigo-600 transition">
+                          <Icon name="globe" className="w-4 h-4 text-slate-400 group-hover:text-white"/>
+                        </span> เว็บไซต์สพม.เลย หนองบัวลำภู
+                      </a></li>
+                    </ul>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start">
+                    <h4 className="font-bold text-white mb-4 border-b-2 border-indigo-500/30 pb-1 inline-block">ติดตามผลงาน</h4>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                      <a href="https://www.facebook.com/share/14cTwei6q1i/?mibextid=wwXIfr" target="_blank" className="social-btn bg-gradient-to-br from-blue-600 to-blue-700 text-white p-2.5 rounded-full hover:shadow-lg shadow-md">
+                        <Icon name="facebook" className="w-5 h-5"/>
+                      </a>
+                      <a href="https://www.youtube.com/@dl-ict.4066/videos" target="_blank" className="social-btn bg-gradient-to-br from-red-600 to-red-700 text-white p-2.5 rounded-full hover:shadow-lg shadow-md">
+                        <Icon name="youtube" className="w-5 h-5"/>
+                      </a>
+                      <a href="https://instagram.com" target="_blank" className="social-btn bg-gradient-to-br from-pink-600 to-rose-700 text-white p-2.5 rounded-full hover:shadow-lg shadow-md">
+                        <Icon name="instagram" className="w-5 h-5"/>
+                      </a>
+                      <a href="https://tiktok.com" target="_blank" className="social-btn bg-gradient-to-br from-gray-900 to-black text-white p-2.5 rounded-full hover:shadow-lg shadow-md">
+                        <Icon name="music" className="w-5 h-5"/>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
+                  <p>© 2026 กลุ่มงานส่งเสริมพัฒนาสื่อ นวัตกรรมและเทคโนโลยีทางการศึกษา. All rights reserved.</p>
+                  <p className="mt-1 opacity-70">Powered by Google Apps Script & React</p>
+                </div>
+             </footer>
+          </main>
+
+          {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} onLogin={handleAdminLogin} />}
+          
+          {viewItem && (
+             <ViewModal 
+                isOpen={!!viewItem} 
+                onClose={() => setViewItem(null)} 
+                item={viewItem} 
+                type={viewItem.type || 'general'} 
+                onStatUpdate={handleStatUpdate}
+                onRate={handleRate}
+                collection={viewItem.collection || (viewItem.type + 's')}
+             />
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<KruPermangApp />);
+  </script>
+</body>
+</html>
